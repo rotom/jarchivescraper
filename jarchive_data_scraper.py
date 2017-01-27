@@ -2,7 +2,7 @@ import requests
 import bs4
 import time
 
-##Use beautifulsoup to get data about contestants and clues###
+###Use beautifulsoup to get data about contestants and clues###
 
 class jeopardyGame():
 
@@ -10,8 +10,8 @@ class jeopardyGame():
         
         self.root = "http://www.j-archive.com/showgame.php?game_id="
         self.game_id = game_id
-        self.req = requests.get(self.root+self.game_id)
-        self.soup = bs4.BeautifulSoup(self.req.text, 'lxml')
+        self.req = requests.get(self.root+self.game_id).text
+        self.soup = bs4.BeautifulSoup(self.req, 'html.parser') #using lxml causes python to crash
 
     def get_clues_with_cats(self):
         
@@ -21,8 +21,6 @@ class jeopardyGame():
 
         contestants = self.soup.find_all('p', class_='contestants')[:3]
         return [c.contents[0].getText() for c in contestants]
-        
-        #return [p.contents[0].contents[0] for p in contestants]
 
     def get_date(self):
         
@@ -51,7 +49,7 @@ class Contestant():
 
 class Clue():
 
-    def __init__(self):
+    def __init__(self, text, value, category):
 
         self.text = text
         self.value = value
@@ -59,7 +57,7 @@ class Clue():
             
 
 if __name__ == '__main__':
-    #game_id = 1
+    
     for game_id in range(1,500):
         game_id_str = str(game_id)
         game = jeopardyGame(game_id_str)
